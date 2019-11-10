@@ -1,37 +1,52 @@
 import React from "react";
 import ToDoItem from "./ToDoItem";
+const ToDoList = props => {
+  const { items } = props;
 
-class ToDoList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { items: this.props.items };
-  }
-  onHandleDelete = (item, key, status) => {
-    this.props.onHandleDelete(item, key, status);
+  const toggleComplete = index => {
+    props.onHandleComplete(index);
   };
-  render() {
-    const { items } = this.props;
-    const ListOfItems = items.map((item, index) => {
-      let { title } = item;
-      return title !== "" ? (
-        <div
-          className="ui olive inverted segment"
-          key={item.key}
-          style={{ marginTop: "15px" }}
-        >
-          <ToDoItem
-            index={index}
-            onHandleDelete={this.onHandleDelete}
-            info={item}
-            handleClick={this.props.handleClick}
-          />
-        </div>
-      ) : (
-        ""
-      );
-    });
-    return <div>{ListOfItems}</div>;
-  }
-}
+
+  const onHandleDelete = isCompleted => {
+    props.onDelete(isCompleted);
+  };
+  const IterateList = items.map((item, index) => {
+    return (
+      <div key={item.id}>
+        <ToDoItem
+          index={index}
+          title={item.title}
+          id={item.id}
+          isCompleted={item.isCompleted}
+          onHandleClick={toggleComplete}
+          onDelete={onHandleDelete}
+        />
+      </div>
+    );
+  });
+
+  return (
+    <div>
+      {IterateList}
+      <div>
+        <button onClick={() => props.onHandleClick("All")}>All</button>
+        <button onClick={() => props.onHandleClick("Active")}>Active</button>
+        <button onClick={() => props.onHandleClick("Complete")}>
+          Completed
+        </button>
+      </div>
+      <div>
+        {items.filter(item => item.isCompleted).length ? (
+          <div>
+            <button onClick={() => props.onDeleteComplete()}>
+              Clear Completed
+            </button>
+          </div>
+        ) : null}
+      </div>
+      <div>Items left: {items.filter(item => !item.isCompleted).length}</div>
+    </div>
+  );
+};
 
 export default ToDoList;

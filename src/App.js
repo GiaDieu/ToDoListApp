@@ -1,76 +1,72 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
+import "./App.css";
 import InputForm from "./components/InputForm";
 import ToDoList from "./components/ToDoList";
+import ThemeContext from "./context/ThemeContext";
 
-import faker from "faker";
-import "./App.css";
+const App = () => {
+  const [toDos, setToDos] = useState([]);
+  const [filter, setFilter] = useState("All");
+  const theme = useContext(ThemeContext);
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      toDoItems: [
-        { title: "Hanging out with girlfriend", key: "Must-do", done: false }
-      ]
-    };
-  }
-  onSearchSubmit = (item, key, status) => {
-    // let itemToAdd = { title: item, key: key, done: status };
-    // // let newState = this.state.toDoItems.push(itemToAdd);
-    // const newState = [...this.state.toDoItems, itemToAdd];
-    // this.setState({ toDoItems: newState });
-    const newToDo = {
-      title: item,
-      key: key,
-      done: status
-    };
-    const toDoItems = [...this.state.toDoItems];
-    toDoItems.push(newToDo);
-    this.setState({ toDoItems });
+  const handleSubmit = value => {
+    if (!value) return;
+    const newToDos = [...toDos, value];
+    setToDos(newToDos);
   };
 
-  onHandleDelete = (item, key, status) => {
-    if (status) {
-      const filteredItem = this.state.toDoItems.filter(
-        todoItem => todoItem.key !== key
+  const toggleComplete = index => {
+    const newtoDos = [...toDos];
+    newtoDos[index].isCompleted = !newtoDos[index].isCompleted;
+    setToDos(newtoDos);
+  };
+
+  const onHandleDelete = isCompleted => {
+    if (isCompleted) {
+      const FilteredItem = toDos.filter(
+        toDo => toDo.isCompleted !== isCompleted
       );
-      this.setState({ toDoItems: filteredItem });
-    } else {
-      alert("this task is not completed yet!");
+      setToDos(FilteredItem);
     }
   };
 
-  handleClick = index => {
-    const toDoItems = this.state.toDoItems;
-    toDoItems[index].done = !toDoItems[index].done;
-    this.setState({ toDoItems });
+  const onDeleteAllCompleted = () => {
+    const FilteredItem = toDos.filter(toDo => !toDo.isCompleted);
+    setToDos(FilteredItem);
   };
 
-  render() {
-    return (
-      <div
-        className="ui raised very padded text container segment"
-        key={this.state.toDoItems.key}
-      >
-        <div>
-          <h2 className="ui header">
-            <img
-              alt="avatar"
-              src={faker.image.animals()}
-              className="ui circular image"
-            />
-            To Do List
-          </h2>
-          <InputForm onSubmit={this.onSearchSubmit} />
-        </div>
-        <ToDoList
-          handleClick={this.handleClick}
-          onHandleDelete={this.onHandleDelete}
-          items={this.state.toDoItems}
-        />
-      </div>
-    );
+  // all 3 buttons to show the information
+  let newToDos = [];
+  if (filter === "All") {
+    newToDos = toDos;
+  } else if (filter === "Active") {
+    newToDos = toDos.filter(toDo => !toDo.isCompleted);
+  } else if (filter === "Complete") {
+    newToDos = toDos.filter(toDo => toDo.isCompleted);
   }
-}
+  const updateFilterResult = valueName => {
+    setFilter(valueName);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setToDos([]);
+    }, 100000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div style={{ backgroundColor: theme.background }} className="App">
+      <InputForm onSubmit={handleSubmit} />
+      <ToDoList
+        items={newToDos}
+        onHandleComplete={toggleComplete}
+        onDelete={onHandleDelete}
+        onHandleClick={updateFilterResult}
+        onDeleteComplete={onDeleteAllCompleted}
+      />
+    </div>
+  );
+};
 
 export default App;

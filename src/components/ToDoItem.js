@@ -1,39 +1,35 @@
-import React, { Component } from "react";
-import "../ToDoItem.css";
+import React, { useEffect } from "react";
 
-class ToDoItem extends Component {
-  onHandleDelete = () => {
-    this.props.onHandleDelete(
-      this.props.info.title,
-      this.props.info.key,
-      this.props.info.done
-    );
+const ToDoItem = props => {
+  const toggleComplete = () => {
+    props.onHandleClick(props.index);
   };
-  render() {
-    const { title, done } = this.props.info;
-    return (
-      <div className="container">
-        <div className="flex-span">
-          <span style={{ textDecoration: done ? "line-through" : "" }}>
-            {title}
-          </span>
-        </div>
-        <div className="flex-button">
-          <button
-            className="ui blue button"
-            onClick={() => this.props.handleClick(this.props.index)}
-          >
-            <span>{done ? "undo" : "completed"}</span>
-          </button>
-        </div>
-        <div className="flex-delete">
-          <button className="ui red button" onClick={this.onHandleDelete}>
-            <span>Delete</span>
-          </button>
-        </div>
-      </div>
-    );
-  }
-}
+
+  const onHandleDelete = () => {
+    props.onDelete(props.isCompleted);
+  };
+
+  useEffect(() => {
+    document.title = `You have added ${props.title}`;
+  }, [props.title]);
+
+  return (
+    <div>
+      <label>
+        <input
+          type="checkbox"
+          checked={props.isCompleted}
+          onChange={toggleComplete}
+        />
+        <span
+          style={{ textDecoration: props.isCompleted ? "line-through" : "" }}
+        >
+          {props.title}
+        </span>
+      </label>
+      <button onClick={onHandleDelete}>x</button>
+    </div>
+  );
+};
 
 export default ToDoItem;
