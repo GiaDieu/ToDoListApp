@@ -1,37 +1,26 @@
 import React from "react";
-import ToDoItem from "./ToDoItem";
+import ToDoItem from "../components/ToDoItem";
 
-class ToDoList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { items: this.props.items };
-  }
-  onHandleDelete = (item, key, status) => {
-    this.props.onHandleDelete(item, key, status);
-  };
-  render() {
-    const { items } = this.props;
-    const ListOfItems = items.map((item, index) => {
-      let { title } = item;
-      return title !== "" ? (
-        <div
-          className="ui olive inverted segment"
-          key={item.key}
-          style={{ marginTop: "15px" }}
-        >
+const ToDoList = ({ todos, toggleToDo, deleteToDo, clearCompleted }) => {
+  return (
+    <div>
+      <ul>
+        {todos.map(todo => (
           <ToDoItem
-            index={index}
-            onHandleDelete={this.onHandleDelete}
-            info={item}
-            handleClick={this.props.handleClick}
+            key={todo.id}
+            toggleToDo={toggleToDo}
+            deleteToDo={deleteToDo}
+            todo={todo}
           />
-        </div>
+        ))}
+      </ul>
+      {todos.filter(todo => todo.completed).length ? (
+        <button onClick={() => clearCompleted(todos)}>Clear Completed</button>
       ) : (
         ""
-      );
-    });
-    return <div>{ListOfItems}</div>;
-  }
-}
+      )}
+    </div>
+  );
+};
 
 export default ToDoList;
