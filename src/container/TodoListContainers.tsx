@@ -5,6 +5,7 @@ import { bindActionCreators, Dispatch } from "redux";
 import { StoreState } from "../store/modules";
 import { TodoItemDataParams } from "../store/modules/TodoTypes";
 import { ActionCreatores as TodosActions } from "../store/modules/TodoActions";
+import { VisiblityFilters } from "../store/modules/FilterTypes";
 
 interface Props {
   TodoItems: TodoItemDataParams[];
@@ -57,10 +58,27 @@ class TodoListContainer extends React.Component<Props> {
 //   })
 // )(TodoListContainer);
 
+const visibleList = (todos: TodoItemDataParams[], filter: string) => {
+  switch (filter) {
+    case VisiblityFilters.SHOW_ALL:
+      return todos;
+    case VisiblityFilters.SHOW_ACTIVE:
+      return todos.filter((todo) => !todo.done);
+    case VisiblityFilters.SHOW_COMPLETED:
+      return todos.filter((todo) => todo.done);
+    default:
+      return todos;
+  }
+};
+
 const mapStateToProps = (state: StoreState) => {
+  const VisibleListItems = visibleList(
+    state.TodoReducer.TodoItems,
+    state.filter
+  );
   return {
     input: state.TodoReducer.input,
-    TodoItems: state.TodoReducer.TodoItems,
+    TodoItems: VisibleListItems,
   };
 };
 
