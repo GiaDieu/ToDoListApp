@@ -40,7 +40,7 @@ const TodoList: React.FC<TodoListProps> = ({
         }}
       >
         <input type="text" value={input} onChange={onChangeInput} />
-        <button>Add</button>
+        <button disabled={!input}>Add</button>
       </form>
       <ul>{TodoItemList}</ul>
     </>
